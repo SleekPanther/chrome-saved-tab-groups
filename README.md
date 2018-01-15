@@ -1,0 +1,1 @@
+# chrome-saved-tabs-group
