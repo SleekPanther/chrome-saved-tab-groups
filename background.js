@@ -10,15 +10,30 @@ function saveCurrentWindowTabs() {
 }
 
 function getTabUrls(win) {
-	chrome.tabs.query({windowId: win.id}, function(tabs){
+	chrome.tabs.query({windowId: win.id}, (tabs)=>{
 		tabs.forEach(function(tab, i){
 			URLs.push(tab.url)
 			console.log(i+": index="+tab.index+" "+tab.url)
 		})
+
+		chrome.storage.sync.set({'URLs': URLs}, () => {
+			if(chrome.runtime.lastError){
+				console.log('Failed to set URLs & sync storage')
+			}
+		});
 	})
 }
 
 function loadTabs(){
+	chrome.storage.sync.get("URLs", function(syncedURLs) {
+		if(syncedURLs.URLs === undefined || chrome.runtime.lastError){
+			console.log('Failed to set URLs & sync storage using empty array')
+		}
+		else{
+			URLs=syncedURLs.URLs
+		}
+	})
+
 	chrome.windows.create({
 		// tabId: tab.id,
 		type: 'normal',
