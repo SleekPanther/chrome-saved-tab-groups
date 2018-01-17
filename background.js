@@ -2,55 +2,63 @@ chrome.runtime.onMessage.addListener(function(response, sender, sendResponse){
 	// alert(response)
 })
 
-let URLs = []
+let savedTabs = []
 
 function saveCurrentWindowTabs() {
-	URLs = []		//reset any previously saved tabs
-	chrome.windows.getCurrent(getTabUrls)
+	// chrome.storage.sync.clear()
+
+	savedTabs = []		//reset any previously saved tabs
+	chrome.windows.getCurrent(getCurrentWindowTabs)
 }
 
-function getTabUrls(win) {
+function getCurrentWindowTabs(win) {
 	chrome.tabs.query({windowId: win.id}, (tabs)=>{
 		tabs.forEach(function(tab, i){
-			URLs.push(tab.url)
-			console.log(i+": index="+tab.index+" "+tab.url)
+			savedTabs.push(tab)
+			console.log(i+": index="+tab.index+" "+tab.url+" pinned="+tab.pinned+" title="+tab.title)
 		})
 
-		chrome.storage.sync.set({'URLs': URLs}, () => {
+		chrome.storage.sync.set({'savedTabs': savedTabs}, () => {
 			if(chrome.runtime.lastError){
-				console.log('Failed to set URLs & sync storage')
+				console.log('Failed to set savedTabs & sync storage')
 			}
 		});
 	})
 }
 
 function loadTabs(){
-	chrome.storage.sync.get("URLs", function(syncedURLs) {
-		if(syncedURLs.URLs === undefined || chrome.runtime.lastError){
-			console.log('Failed to set URLs & sync storage using empty array')
+	
+
+	chrome.storage.sync.get("savedTabs", function(syncedsavedTabs) {
+		if(syncedsavedTabs.savedTabs === undefined || chrome.runtime.lastError){
+			console.log('Failed to sync savedTabs, using empty array')
 		}
 		else{
-			URLs=syncedURLs.URLs
+			savedTabs=syncedsavedTabs.savedTabs
 		}
 	})
 
+	
+
 	chrome.windows.create({
-		// tabId: tab.id,
 		type: 'normal',
 		focused: true, 
 		state: 'maximized'
 	}, ()=>{})
 
-	//Update the new empty tab to the 1st saved URL
+	//Update the new empty tab to the 1st saved Tab
 	chrome.tabs.query({active: true, currentWindow: true}, function(arrayOfTabs) {
 		let activeTab = arrayOfTabs[0]		// only one tab should be active and in the current window at once
-		chrome.tabs.update(activeTab.id, {url: URLs[0]})
+		chrome.tabs.update(activeTab.id, {url: savedTabs[0].url})
 	})
 
-	//Start at index 1 & create new tabs for the rest of the saved URLs
-	for(index=1; index<URLs.length; index++){
-		console.log("in="+index+": "+URLs[index])
-		chrome.tabs.create({url: URLs[index], index: index})
+	//Start at index 1 & create new tabs for the rest of the saved savedTabs
+	for(index=1; index<savedTabs.length; index++){
+		console.log("in="+index+": "+savedTabs[index])
+		chrome.tabs.create({
+			url: savedTabs[index].url,
+			index: index
+		})
 	}
 }
 
@@ -65,3 +73,15 @@ chrome.commands.onCommand.addListener(function(command) {
 		alert(command)
 	}
 })
+
+/* store objects {title, url, pinned}
+if(myTab.pinned){
+	make pinned tab
+	https://stackoverflow.com/questions/36289244/programatically-pin-a-tab-in-google-chrome
+}
+else{
+	make normal tab
+}
+
+myTab.title = used for displaying previews for what's in a tab group
+*/
