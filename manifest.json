@@ -8,7 +8,7 @@
 
 	"browser_action": {
 		"default_icon": "icon.png",
-		// "default_popup": "popup.html", 
+		"default_popup": "popup.html", 
 		"default_title": "Saved Tab Groups"
 	},
 	"permissions": [
@@ -19,6 +19,7 @@
 	"background": {
 		"scripts": [
 			"jquery-min.js", 
+			// "jquery-ui-min.js", 
 			"background.js"
 		]
 	},
@@ -27,13 +28,13 @@
 			"suggested_key": {
 				"default": "Alt+S"
 			},
-			"description": "Display Alert 1"
+			"description": "Save current window tabs to group 1"
 		}, 
 		"loadTabs": {
 			"suggested_key": {
 				"default": "Alt+Shift+S"
 			},
-			"description": "Display Alert again"
+			"description": "Load group 1 tabs"
 		}
 	}
 }

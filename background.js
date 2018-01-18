@@ -76,7 +76,9 @@ chrome.commands.onCommand.addListener(function(command) {
 	else if(command === "loadTabs"){
 		loadTabs()
 	}
-	else{
-		alert(command)
-	}
+	// else{
+	// 	alert(command)
+	// }
 })
+
+//10 groups (1-9, then 0=10?)
