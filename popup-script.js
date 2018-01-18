@@ -26,19 +26,31 @@ const keycodeToKey = {
 document.addEventListener('DOMContentLoaded', doStuff, false);
 
 function doStuff(){
-	const modifierKey=18
-	let isModifierKey = false
+	const saveModifierKey=18
+	const loadAdditionalModifierKey=17
+	let isSaveModifierKey = false
+	let isLoadAdditionalModifierKey = false
 	$(document).keyup(function (e) {	//Detect when modifier key is released (no keyboard shortcut should happen)
-		if(e.which == modifierKey){
-			isModifierKey=false;
+		if(e.which == saveModifierKey){
+			isSaveModifierKey=false;
+		}
+		if(e.which == loadAdditionalModifierKey){
+			isLoadAdditionalModifierKey=false
 		}
 	}).keydown(function (e) {
 		let keycode=e.which
-		if(keycode == modifierKey){
-			isModifierKey=true;
+		if(keycode == saveModifierKey){
+			isSaveModifierKey=true
 		}
-		if(isModifierKey && isValidComboKey(keycode)) {
-			console.log(keycodeToKey[keycode])
+		if(keycode == loadAdditionalModifierKey){
+			isLoadAdditionalModifierKey=true
+		}
+
+		if(isLoadAdditionalModifierKey && isSaveModifierKey && isValidComboKey(keycode)) {
+			loadGroup(keycodeToKey[keycode])
+		}
+		else if(isSaveModifierKey && isValidComboKey(keycode)) {
+			saveGroup(keycodeToKey[keycode])
 		}
 	});
 }
@@ -52,5 +64,9 @@ function isValidComboKey(keycode){
 }
 
 function saveGroup(groupNumber){
+	console.log('save '+groupNumber)
+}
 
+function loadGroup(groupNumber){
+	console.log('load '+groupNumber)
 }
