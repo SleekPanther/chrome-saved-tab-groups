@@ -35,6 +35,12 @@
 				"default": "Alt+Shift+S"
 			},
 			"description": "Load group 1 tabs"
+		}, 
+		"clearSynced": {
+			"suggested_key": {
+				"default": "Alt+C"
+			},
+			"description": "Clear all saved tabs from synced storage"
 		}
 	}
 }
