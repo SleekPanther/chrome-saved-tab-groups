@@ -64,7 +64,6 @@ function isValidComboKey(keycode){
 }
 
 function saveGroup(groupNumber){
-	console.log('save '+groupNumber)
 	chrome.runtime.sendMessage({
 		msg: "saveGroup", 
 		groupNumber: groupNumber
@@ -72,5 +71,8 @@ function saveGroup(groupNumber){
 }
 
 function loadGroup(groupNumber){
-	console.log('load '+groupNumber)
+	chrome.runtime.sendMessage({
+		msg: "loadGroup", 
+		groupNumber: groupNumber
+	})
 }

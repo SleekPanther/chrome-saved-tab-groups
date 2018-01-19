@@ -9,9 +9,17 @@ chrome.runtime.onMessage.addListener(
 	}
 )
 
+chrome.runtime.onMessage.addListener(
+	function(request, sender, sendResponse) {
+		if (request.msg == "loadGroup") {
+			loadTabs(request.groupNumber)
+		}
+	}
+)
+
 function saveCurrentWindowTabs(groupNumber) {
 	// chrome.storage.sync.clear()
-	console.log('group='+groupNumber)
+	console.log('Save group '+groupNumber)
 
 	let currentWindowTabs = []
 
@@ -23,6 +31,9 @@ function saveCurrentWindowTabs(groupNumber) {
 
 			savedTabGroups[groupNumber]=currentWindowTabs
 
+			console.log('savedTabGroups')
+			console.log(savedTabGroups)
+
 			chrome.storage.sync.set({'savedTabGroups': savedTabGroups}, () => {
 				if(chrome.runtime.lastError){
 					console.log('Failed to set savedTabGroups & sync storage')
@@ -33,6 +44,8 @@ function saveCurrentWindowTabs(groupNumber) {
 }
 
 function loadTabs(groupNumber){
+	console.log('Load group '+groupNumber)
+
 	chrome.storage.sync.get("savedTabGroups", function(syncedSavedTabGroups) {
 		if(syncedSavedTabGroups.savedTabGroups === undefined || chrome.runtime.lastError){
 			console.log('Failed to sync savedTabGroups, using empty array')
