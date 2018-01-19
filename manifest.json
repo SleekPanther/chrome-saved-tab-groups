@@ -3,8 +3,8 @@
 	
 	"name": "Saved Tab Groups",
 	"description": "Save & restore groups of tabs (like an enhanced Ctrl+Shift+T)",
-	"version": "0.1.0",
-	"version_name": "0.3.0 Pinned Tabs", 
+	"version": "0.4.0",
+	"version_name": "0.4.0 Popup Multiple Tab Groups", 
 
 	"browser_action": {
 		"default_icon": "icon.png",

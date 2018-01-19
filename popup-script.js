@@ -68,6 +68,7 @@ function saveGroup(groupNumber){
 		msg: "saveGroup", 
 		groupNumber: groupNumber
 	})
+	window.close()		//close popup to fix lastFocusedWindow not changing
 }
 
 function loadGroup(groupNumber){
@@ -75,4 +76,5 @@ function loadGroup(groupNumber){
 		msg: "loadGroup", 
 		groupNumber: groupNumber
 	})
+	window.close()
 }

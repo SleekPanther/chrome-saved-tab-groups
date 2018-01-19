@@ -18,27 +18,22 @@ chrome.runtime.onMessage.addListener(
 )
 
 function saveCurrentWindowTabs(groupNumber) {
-	// chrome.storage.sync.clear()
 	console.log('Save group '+groupNumber)
 
-	let currentWindowTabs = []
+	chrome.tabs.query({lastFocusedWindow: true}, (tabs)=>{
+		savedTabGroups[groupNumber]=[]
+		tabs.forEach(function(tab, i){
+			savedTabGroups[groupNumber].push(tab)
+			// currentWindowTabs.push(tab)
+			console.log(tab.title)
+		})
 
-	chrome.windows.getCurrent((currentWindow)=>{
-		chrome.tabs.query({windowId: currentWindow.id}, (tabs)=>{
-			tabs.forEach(function(tab, i){
-				currentWindowTabs.push(tab)
-			})
+		console.log(savedTabGroups)
 
-			savedTabGroups[groupNumber]=currentWindowTabs
-
-			console.log('savedTabGroups')
-			console.log(savedTabGroups)
-
-			chrome.storage.sync.set({'savedTabGroups': savedTabGroups}, () => {
-				if(chrome.runtime.lastError){
-					console.log('Failed to set savedTabGroups & sync storage')
-				}
-			});
+		chrome.storage.sync.set({'savedTabGroups': savedTabGroups}, () => {
+			if(chrome.runtime.lastError){
+				console.log('Failed to set savedTabGroups & sync storage')
+			}
 		})
 	})
 }
@@ -108,5 +103,10 @@ chrome.commands.onCommand.addListener(function(command) {
 	}
 	else if(command === "loadTabs"){
 		loadTabs(defaultGroup)
+	}
+	else if(command === "clearSynced"){
+		console.log('Cleared Synced')
+		chrome.storage.sync.clear()
+		savedTabGroups = new Array(GROUP_COUNT)
 	}
 })
