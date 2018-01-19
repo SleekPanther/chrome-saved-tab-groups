@@ -23,13 +23,12 @@ const keycodeToKey = {
 	105: 9, 
 }
 
-document.addEventListener('DOMContentLoaded', doStuff, false);
-
-function doStuff(){
+document.addEventListener('DOMContentLoaded', ()=>{
 	const saveModifierKey=18
 	const loadAdditionalModifierKey=17
 	let isSaveModifierKey = false
 	let isLoadAdditionalModifierKey = false
+	
 	$(document).keyup(function (e) {	//Detect when modifier key is released (no keyboard shortcut should happen)
 		if(e.which == saveModifierKey){
 			isSaveModifierKey=false;
@@ -52,8 +51,8 @@ function doStuff(){
 		else if(isSaveModifierKey && isValidComboKey(keycode)) {
 			saveGroup(keycodeToKey[keycode])
 		}
-	});
-}
+	})
+})
 
 function isValidComboKey(keycode){
 	const digitLowerBound=48
