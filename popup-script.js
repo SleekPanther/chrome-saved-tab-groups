@@ -1,5 +1,5 @@
 const keycodeToKey = {
-	//Normal keys
+	//Normal number keys
 	48: 0, 
 	49: 1, 
 	50: 2, 
@@ -65,6 +65,10 @@ function isValidComboKey(keycode){
 
 function saveGroup(groupNumber){
 	console.log('save '+groupNumber)
+	chrome.runtime.sendMessage({
+		msg: "saveGroup", 
+		groupNumber: groupNumber
+	})
 }
 
 function loadGroup(groupNumber){
