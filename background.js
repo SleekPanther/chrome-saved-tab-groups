@@ -69,10 +69,9 @@ function loadTabs(groupNumber){
 
 		if(syncedTabData.savedTabGroupsPinned === undefined){
 			console.log('Failed to sync savedTabGroupsPinned or empty group, using empty array')
-			savedTabGroupsUrls = []
 		}
 		else{
-			savedTabGroupsUrls=syncedTabData.savedTabGroupsUrls
+			savedTabGroupsPinned=syncedTabData.savedTabGroupsPinned
 		}
 	})
 
@@ -82,16 +81,15 @@ function loadTabs(groupNumber){
 		state: 'maximized'
 	}, ()=>{})
 
+	if(savedTabGroupsUrls[groupNumber]===undefined || savedTabGroupsPinned[groupNumber]===undefined){
+		console.log('No tab data for group', groupNumber, 'Using empty window')
+		return
+	}
+
 	//Update the new empty tab to the 1st saved Tab
 	chrome.tabs.query({active: true, currentWindow: true}, function(arrayOfTabs) {
 		let activeTab = arrayOfTabs[0]		// only one tab should be active and in the current window at once
 		
-		//Open Blank window & return if no saved tabs for that group
-		if(savedTabGroupsUrls[groupNumber] === null){
-			console.log('No saved Tabs for group '+groupNumber+'. Opening blank window')
-			return
-		}
-
 		let tabUrlsToLoad = savedTabGroupsUrls[groupNumber]
 		let tabPinnedStatus = savedTabGroupsPinned[groupNumber]
 
