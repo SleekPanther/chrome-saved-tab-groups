@@ -1,3 +1,0 @@
-10 groups (1-9, then 0=10?)
-options page: open maximized or not
-Button/shortcut to clear all saved tabs (warning/alert?)
