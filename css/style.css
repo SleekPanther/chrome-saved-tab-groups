@@ -7,9 +7,11 @@
 	width: 2em;
 	height: 2em;
 }
-div{
-	border: 1px solid black;
+
+#groupButtons td:hover{
+	background: grey;
 }
+
 body{
 	width: 500px;
 	height: 500px;

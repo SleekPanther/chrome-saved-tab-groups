@@ -23,7 +23,7 @@ const keycodeToKey = {
 	105: 9, 
 }
 
-document.addEventListener('DOMContentLoaded', ()=>{
+$().ready( ()=>{
 	const saveModifierKey=18
 	const loadAdditionalModifierKey=17
 	let isSaveModifierKey = false
@@ -53,7 +53,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
 		}
 	})
 
-	$(document).ready(populateGroupButtons)
+	populateGroupButtons()
 })
 
 function isValidComboKey(keycode){
@@ -80,24 +80,24 @@ function loadGroup(groupNumber){
 	window.close()
 }
 
-//minimize dom operations, pre-create the table & do 1 append
 function populateGroupButtons(){
 	const groups = [1, 2, 3, 4, 5, 6, 7, 8, 9, 0]		//group 0 is at the end
-	let buttons = $('#groupButtons')
+	let newRowContent = []
 	groups.forEach((group)=>{
-			buttons.append(
-			'<tr>'+
-				'<td id="save'+group+'">'+
+			newRowContent.push(
+			'<tr> \
+				<td id="save'+group+'">'+
 					group+
-				'</td>'+
-				'<td id="load'+group+'">'+
+				'</td>\
+				<td id="load'+group+'">'+
 					group+
-				'</td>'+
-			'</tr>'
+				'</td>\
+			</tr>'
 		)
 	})
+	$('#groupButtons').append(newRowContent.join(''))
 
-	$(document).ready(registerClickHandlers)
+	$().ready(registerClickHandlers)
 }
 
 function registerClickHandlers(){
