@@ -5,6 +5,8 @@ let savedTabGroupsTitles = new Array(GROUP_COUNT)
 let savedTabGroupsFaviconUrls = new Array(GROUP_COUNT)
 let savedTabGroupsPinned = new Array(GROUP_COUNT)
 
+let storageMode = 'sync'	//whether data should be synced or local (sometimes sync gets full & must resort to local)
+
 chrome.runtime.onMessage.addListener(
 	function(request, sender, sendResponse) {
 		if (request.msg == "saveGroup") {
@@ -39,6 +41,7 @@ function saveCurrentWindowTabs(groupNumber) {
 
 		console.log('Saved Tab URLs\n', savedTabGroupsUrls)
 
+		storageMode = 'sync'
 		chrome.storage.sync.set({
 				'savedTabGroupsUrls': savedTabGroupsUrls, 
 				'savedTabGroupsTitles': savedTabGroupsTitles, 
@@ -46,7 +49,17 @@ function saveCurrentWindowTabs(groupNumber) {
 				'savedTabGroupsPinned': savedTabGroupsPinned
 			}, () => {
 			if(chrome.runtime.lastError){
-				console.log('Likely failed to set & sync storage\n', chrome.runtime.lastError.message)
+				console.log(chrome.runtime.lastError.message)
+
+				chrome.storage.local.set({
+						'savedTabGroupsUrls': savedTabGroupsUrls, 
+						'savedTabGroupsTitles': savedTabGroupsTitles, 
+						'savedTabGroupsFaviconUrls': savedTabGroupsFaviconUrls, 
+						'savedTabGroupsPinned': savedTabGroupsPinned
+					}, () => {
+						console.log('Saving to Local storage')
+						storageMode='local'
+				})
 			}
 		})
 	})
@@ -55,25 +68,49 @@ function saveCurrentWindowTabs(groupNumber) {
 function loadTabs(groupNumber){
 	console.log('Load Group', groupNumber)
 
-	chrome.storage.sync.get(['savedTabGroupsUrls', 'savedTabGroupsPinned'], function(syncedTabData) {
-		if(chrome.runtime.lastError){
-			console.log(chrome.runtime.lastError.message)
-		}
+	if(storageMode==='sync'){
+		chrome.storage.sync.get(['savedTabGroupsUrls', 'savedTabGroupsPinned'], function(syncedTabData) {
+			if(chrome.runtime.lastError){
+				console.log(chrome.runtime.lastError.message)
+			}
 
-		if(syncedTabData.savedTabGroupsUrls === undefined){
-			console.log('Failed to sync savedTabGroupsUrls or empty group, using empty array')
-		}
-		else{
-			savedTabGroupsUrls=syncedTabData.savedTabGroupsUrls
-		}
+			if(syncedTabData.savedTabGroupsUrls === undefined){
+				console.log('Failed to sync savedTabGroupsUrls or empty group, using empty array')
+			}
+			else{
+				savedTabGroupsUrls=syncedTabData.savedTabGroupsUrls
+			}
 
-		if(syncedTabData.savedTabGroupsPinned === undefined){
-			console.log('Failed to sync savedTabGroupsPinned or empty group, using empty array')
-		}
-		else{
-			savedTabGroupsPinned=syncedTabData.savedTabGroupsPinned
-		}
-	})
+			if(syncedTabData.savedTabGroupsPinned === undefined){
+				console.log('Failed to sync savedTabGroupsPinned or empty group, using empty array')
+			}
+			else{
+				savedTabGroupsPinned=syncedTabData.savedTabGroupsPinned
+			}
+		})
+	}
+	else if(storageMode==='local'){
+		console.log('Loading local')
+		chrome.storage.local.get(['savedTabGroupsUrls', 'savedTabGroupsPinned'], function(localTabData) {
+			if(chrome.runtime.lastError){
+				console.log(chrome.runtime.lastError.message)
+			}
+
+			if(localTabData.savedTabGroupsUrls === undefined){
+				console.log('Failed to get local savedTabGroupsUrls or empty group, using empty array')
+			}
+			else{
+				savedTabGroupsUrls=localTabData.savedTabGroupsUrls
+			}
+
+			if(localTabData.savedTabGroupsPinned === undefined){
+				console.log('Failed to get local savedTabGroupsPinned or empty group, using empty array')
+			}
+			else{
+				savedTabGroupsPinned=localTabData.savedTabGroupsPinned
+			}
+		})
+	}
 
 	chrome.windows.create({
 		type: 'normal',
