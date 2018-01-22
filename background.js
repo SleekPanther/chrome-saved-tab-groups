@@ -130,6 +130,10 @@ chrome.commands.onCommand.addListener(function(command) {
 	else if(command === "clearSynced"){
 		console.log('Cleared Synced')
 		chrome.storage.sync.clear()
+
 		savedTabGroupsUrls = new Array(GROUP_COUNT)
+		savedTabGroupsTitles = new Array(GROUP_COUNT)
+		savedTabGroupsFaviconUrls = new Array(GROUP_COUNT)
+		savedTabGroupsPinned = new Array(GROUP_COUNT)
 	}
 })
