@@ -1,5 +1,9 @@
 const GROUP_COUNT = 10
-let savedTabGroups = new Array(GROUP_COUNT)
+//Separate data structurs since chrome.storage limits size (can't store entire Tab objects)
+let savedTabGroupsUrls = new Array(GROUP_COUNT)
+let savedTabGroupsTitles = new Array(GROUP_COUNT)
+let savedTabGroupsFaviconUrls = new Array(GROUP_COUNT)
+let savedTabGroupsPinned = new Array(GROUP_COUNT)
 
 chrome.runtime.onMessage.addListener(
 	function(request, sender, sendResponse) {
@@ -18,38 +22,58 @@ chrome.runtime.onMessage.addListener(
 )
 
 function saveCurrentWindowTabs(groupNumber) {
-	console.log('Save group '+groupNumber)
+	console.log('Save Group '+groupNumber)
 
 	chrome.tabs.query({lastFocusedWindow: true}, (tabs)=>{
-		savedTabGroups[groupNumber]=[]
+		savedTabGroupsUrls[groupNumber]=[]
+		savedTabGroupsTitles[groupNumber]=[]
+		savedTabGroupsFaviconUrls[groupNumber]=[]
+		savedTabGroupsPinned[groupNumber]=[]
 		tabs.forEach(function(tab, i){
-			savedTabGroups[groupNumber].push(tab)
-			// currentWindowTabs.push(tab)
+			savedTabGroupsUrls[groupNumber].push(tab.url)
+			savedTabGroupsTitles[groupNumber].push(tab.title)
+			savedTabGroupsFaviconUrls[groupNumber].push(tab.favIconUrl)
+			savedTabGroupsPinned[groupNumber].push(tab.pinned)
 			console.log(tab.title)
 		})
 
-		console.log(savedTabGroups)
+		console.log('Saved Tab URLs\n', savedTabGroupsUrls)
 
-		chrome.storage.sync.set({'savedTabGroups': savedTabGroups}, () => {
+		chrome.storage.sync.set({
+				'savedTabGroupsUrls': savedTabGroupsUrls, 
+				'savedTabGroupsTitles': savedTabGroupsTitles, 
+				'savedTabGroupsFaviconUrls': savedTabGroupsFaviconUrls, 
+				'savedTabGroupsPinned': savedTabGroupsPinned
+			}, () => {
 			if(chrome.runtime.lastError){
-				console.log('Failed to set savedTabGroups & sync storage')
+				console.log('Likely failed to set & sync storage\n', chrome.runtime.lastError.message)
 			}
 		})
 	})
 }
 
 function loadTabs(groupNumber){
-	console.log('Load group '+groupNumber)
+	console.log('Load Group', groupNumber)
 
-	chrome.storage.sync.get("savedTabGroups", function(syncedSavedTabGroups) {
-		if(syncedSavedTabGroups.savedTabGroups === undefined || chrome.runtime.lastError){
-			console.log('Failed to sync savedTabGroups, using empty array')
+	chrome.storage.sync.get(['savedTabGroupsUrls', 'savedTabGroupsPinned'], function(syncedTabData) {
+		if(chrome.runtime.lastError){
+			console.log(chrome.runtime.lastError.message)
+		}
+
+		if(syncedTabData.savedTabGroupsUrls === undefined){
+			console.log('Failed to sync savedTabGroupsUrls or empty group, using empty array')
 		}
 		else{
-			savedTabGroups=syncedSavedTabGroups.savedTabGroups
+			savedTabGroupsUrls=syncedTabData.savedTabGroupsUrls
 		}
-		console.log('Synced savedTabGroups')
-		console.log(savedTabGroups)
+
+		if(syncedTabData.savedTabGroupsPinned === undefined){
+			console.log('Failed to sync savedTabGroupsPinned or empty group, using empty array')
+			savedTabGroupsUrls = []
+		}
+		else{
+			savedTabGroupsUrls=syncedTabData.savedTabGroupsUrls
+		}
 	})
 
 	chrome.windows.create({
@@ -62,33 +86,34 @@ function loadTabs(groupNumber){
 	chrome.tabs.query({active: true, currentWindow: true}, function(arrayOfTabs) {
 		let activeTab = arrayOfTabs[0]		// only one tab should be active and in the current window at once
 		
-		//Open Blank window & Return if no saved tabs for that group
-		if(savedTabGroups[groupNumber] === null){
+		//Open Blank window & return if no saved tabs for that group
+		if(savedTabGroupsUrls[groupNumber] === null){
 			console.log('No saved Tabs for group '+groupNumber+'. Opening blank window')
 			return
 		}
 
-		let tabsToLoad = savedTabGroups[groupNumber]
+		let tabUrlsToLoad = savedTabGroupsUrls[groupNumber]
+		let tabPinnedStatus = savedTabGroupsPinned[groupNumber]
 
-		if(tabsToLoad[0].pinned){
-			chrome.tabs.update(activeTab.id, {url: tabsToLoad[0].url, pinned: true})
+		if(tabPinnedStatus[0]){
+			chrome.tabs.update(activeTab.id, {url: tabUrlsToLoad[0], pinned: true})
 		}
 		else{
-			chrome.tabs.update(activeTab.id, {url: tabsToLoad[0].url})
+			chrome.tabs.update(activeTab.id, {url: tabUrlsToLoad[0]})
 		}
 		
 		//Start at index 1 & create new tabs for the rest of the saved tabs
-		for(index=1; index<tabsToLoad.length; index++){
-			if(tabsToLoad[index].pinned){
+		for(let index=1; index<tabUrlsToLoad.length; index++){
+			if(tabPinnedStatus[index]){
 				chrome.tabs.create({
-					url: tabsToLoad[index].url,
+					url: tabUrlsToLoad[index],
 					index: index, 
 					pinned: true
 				})
 			}
 			else{
 				chrome.tabs.create({
-					url: tabsToLoad[index].url,
+					url: tabUrlsToLoad[index],
 					index: index
 				})
 			}
@@ -107,6 +132,6 @@ chrome.commands.onCommand.addListener(function(command) {
 	else if(command === "clearSynced"){
 		console.log('Cleared Synced')
 		chrome.storage.sync.clear()
-		savedTabGroups = new Array(GROUP_COUNT)
+		savedTabGroupsUrls = new Array(GROUP_COUNT)
 	}
 })

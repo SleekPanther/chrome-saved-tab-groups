@@ -1,0 +1,16 @@
+#groupButtons{
+	border-collapse: collapse;
+}
+
+#groupButtons th, #groupButtons td{
+	border: 1px solid black;
+	width: 2em;
+	height: 2em;
+}
+div{
+	border: 1px solid black;
+}
+body{
+	width: 500px;
+	height: 500px;
+}

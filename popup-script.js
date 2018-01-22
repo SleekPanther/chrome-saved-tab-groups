@@ -52,6 +52,8 @@ document.addEventListener('DOMContentLoaded', ()=>{
 			saveGroup(keycodeToKey[keycode])
 		}
 	})
+
+	$(document).ready(populateGroupButtons)
 })
 
 function isValidComboKey(keycode){
@@ -76,4 +78,38 @@ function loadGroup(groupNumber){
 		groupNumber: groupNumber
 	})
 	window.close()
+}
+
+//minimize dom operations, pre-create the table & do 1 append
+function populateGroupButtons(){
+	const groups = [1, 2, 3, 4, 5, 6, 7, 8, 9, 0]		//group 0 is at the end
+	let buttons = $('#groupButtons')
+	groups.forEach((group)=>{
+			buttons.append(
+			'<tr>'+
+				'<td id="save'+group+'">'+
+					group+
+				'</td>'+
+				'<td id="load'+group+'">'+
+					group+
+				'</td>'+
+			'</tr>'
+		)
+	})
+
+	$(document).ready(registerClickHandlers)
+}
+
+function registerClickHandlers(){
+	$('#groupButtons').on('click', 'td', (e)=>{ 
+		let group = e.target.id.slice(-1)
+		let action = e.target.id.slice(0, e.target.id.length-1)
+
+		if(action==='save'){
+			saveGroup(group)
+		}
+		else if(action==='load'){
+			loadGroup(group)
+		}
+	})
 }
