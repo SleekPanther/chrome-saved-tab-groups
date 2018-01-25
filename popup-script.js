@@ -1,3 +1,11 @@
+let functionCalls=0
+
+const GROUP_COUNT = 10
+//Separate data structurs since chrome.storage limits size (can't store entire Tab objects)
+let savedTabGroupsUrls = new Array(GROUP_COUNT)
+let savedTabGroupsTitles = new Array(GROUP_COUNT)
+let savedTabGroupsFaviconUrls = new Array(GROUP_COUNT)
+
 const keycodeToKey = {
 	//Normal number keys
 	48: 0, 
@@ -10,7 +18,7 @@ const keycodeToKey = {
 	55: 7, 
 	56: 8, 
 	57: 9, 
-	//numpad
+	//Numpad
 	96: 0, 
 	97: 1, 
 	98: 2, 
@@ -22,6 +30,22 @@ const keycodeToKey = {
 	104: 8, 
 	105: 9, 
 }
+
+chrome.runtime.onMessage.addListener(
+	function(request, sender, sendResponse) {
+		if (request.msg === 'testMessage') {
+			console.log('Test Message')
+		}
+	}
+)
+
+chrome.runtime.onMessage.addListener(
+	function(request, sender, sendResponse) {
+		if (request.msg === 'tabsDataUpdated') {
+			initPopup()
+		}
+	}
+)
 
 $().ready( ()=>{
 	const saveModifierKey=18
@@ -53,7 +77,7 @@ $().ready( ()=>{
 		}
 	})
 
-	populateGroupButtons()
+	initPopup()
 })
 
 function isValidComboKey(keycode){
@@ -66,36 +90,66 @@ function isValidComboKey(keycode){
 
 function saveGroup(groupNumber){
 	chrome.runtime.sendMessage({
-		msg: "saveGroup", 
+		msg: 'saveGroup', 
 		groupNumber: groupNumber
+	}, ()=>{
+		initPopup()
 	})
 	window.close()		//close popup to fix lastFocusedWindow not changing
 }
 
 function loadGroup(groupNumber){
 	chrome.runtime.sendMessage({
-		msg: "loadGroup", 
+		msg: 'loadGroup', 
 		groupNumber: groupNumber
 	})
 	window.close()
 }
 
+function initPopup(){
+	chrome.runtime.sendMessage({msg: 'requestSavedTabData'}, (response)=>{
+		savedTabGroupsUrls = response.savedTabGroupsUrls
+		savedTabGroupsTitles = response.savedTabGroupsTitles
+		savedTabGroupsFaviconUrls = response.savedTabGroupsFaviconUrls
+
+		populateGroupButtons()
+	})
+}
+
 function populateGroupButtons(){
+	// console.log('populateGroupButtons\n', savedTabGroupsUrls, savedTabGroupsTitles, savedTabGroupsFaviconUrls)
+
 	const groups = [1, 2, 3, 4, 5, 6, 7, 8, 9, 0]		//group 0 is at the end
-	let newRowContent = []
+	let rowContent = [
+		'<h2>' + functionCalls++ +' Calls</h2>'+
+		'<tr>\
+			<th>Save</th>\
+			<th>Load</th>\
+		</tr>'
+	]
 	groups.forEach((group)=>{
-			newRowContent.push(
+		let savedTabCount=0
+		if(savedTabGroupsUrls[group] !== null){
+			savedTabCount=savedTabGroupsUrls[group].length
+		}
+
+		let tabCountInfo='<span class="tabCountInfo">('+savedTabCount+' tabs)</span><br>'
+		if(savedTabCount===1){
+			tabCountInfo='<span class="tabCountInfo">('+savedTabCount+' tab)</span><br>'
+		}
+		rowContent.push(
 			'<tr> \
-				<td id="save'+group+'">'+
-					group+
+				<td id="save'+group+'">\
+					Group '+group+
 				'</td>\
 				<td id="load'+group+'">'+
-					group+
+					tabCountInfo+
+					'Group '+group+
 				'</td>\
 			</tr>'
 		)
 	})
-	$('#groupButtons').append(newRowContent.join(''))
+	document.getElementById('groupButtons').innerHTML = rowContent.join('')
 
 	$().ready(registerClickHandlers)
 }

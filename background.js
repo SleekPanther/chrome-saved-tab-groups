@@ -9,7 +9,7 @@ let storageMode = 'sync'	//whether data should be synced or local (sometimes syn
 
 chrome.runtime.onMessage.addListener(
 	function(request, sender, sendResponse) {
-		if (request.msg == "saveGroup") {
+		if (request.msg === 'saveGroup') {
 			saveCurrentWindowTabs(request.groupNumber)
 		}
 	}
@@ -17,8 +17,20 @@ chrome.runtime.onMessage.addListener(
 
 chrome.runtime.onMessage.addListener(
 	function(request, sender, sendResponse) {
-		if (request.msg == "loadGroup") {
+		if (request.msg === 'loadGroup') {
 			loadTabs(request.groupNumber)
+		}
+	}
+)
+
+chrome.runtime.onMessage.addListener(
+	function(request, sender, sendResponse) {
+		if (request.msg === 'requestSavedTabData') {
+			sendResponse({
+				savedTabGroupsUrls: savedTabGroupsUrls, 
+				savedTabGroupsTitles: savedTabGroupsTitles, 
+				savedTabGroupsFaviconUrls: savedTabGroupsFaviconUrls
+			})
 		}
 	}
 )
@@ -36,7 +48,6 @@ function saveCurrentWindowTabs(groupNumber) {
 			savedTabGroupsTitles[groupNumber].push(tab.title)
 			savedTabGroupsFaviconUrls[groupNumber].push(tab.favIconUrl)
 			savedTabGroupsPinned[groupNumber].push(tab.pinned)
-			console.log(tab.title)
 		})
 
 		console.log('Saved Tab URLs\n', savedTabGroupsUrls)
@@ -158,13 +169,16 @@ function loadTabs(groupNumber){
 
 const defaultGroup = 1
 chrome.commands.onCommand.addListener(function(command) {
-	if(command === "saveTabs"){
+	if(command === 'saveTabs'){
 		saveCurrentWindowTabs(defaultGroup)
+		chrome.runtime.sendMessage({
+			msg: 'tabsDataUpdated', 
+		})
 	}
-	else if(command === "loadTabs"){
+	else if(command === 'loadTabs'){
 		loadTabs(defaultGroup)
 	}
-	else if(command === "clearSynced"){
+	else if(command === 'clearSynced'){
 		console.log('Cleared Synced')
 		chrome.storage.sync.clear()
 
@@ -172,5 +186,12 @@ chrome.commands.onCommand.addListener(function(command) {
 		savedTabGroupsTitles = new Array(GROUP_COUNT)
 		savedTabGroupsFaviconUrls = new Array(GROUP_COUNT)
 		savedTabGroupsPinned = new Array(GROUP_COUNT)
+	}
+
+	else if(command === 'sendMessage'){
+		console.log(savedTabGroupsUrls, savedTabGroupsTitles, savedTabGroupsFaviconUrls, savedTabGroupsPinned)
+		chrome.runtime.sendMessage({
+			msg: 'testMessage'
+		})
 	}
 })
