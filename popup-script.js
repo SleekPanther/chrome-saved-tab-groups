@@ -1,5 +1,3 @@
-let functionCalls=0
-
 const GROUP_COUNT = 10
 //Separate data structurs since chrome.storage limits size (can't store entire Tab objects)
 let savedTabGroupsUrls = new Array(GROUP_COUNT)
@@ -117,11 +115,8 @@ function initPopup(){
 }
 
 function populateGroupButtons(){
-	// console.log('populateGroupButtons\n', savedTabGroupsUrls, savedTabGroupsTitles, savedTabGroupsFaviconUrls)
-
-	const groups = [1, 2, 3, 4, 5, 6, 7, 8, 9, 0]		//group 0 is at the end
+	const groups = [1, 2, 3, 4, 5, 6, 7, 8, 9, 0]		//group 0 is at the end due to physical keyboard layout
 	let rowContent = [
-		'<h2>' + functionCalls++ +' Calls</h2>'+
 		'<tr>\
 			<th>Save</th>\
 			<th>Load</th>\
@@ -129,23 +124,38 @@ function populateGroupButtons(){
 	]
 	groups.forEach((group)=>{
 		let savedTabCount=0
-		if(savedTabGroupsUrls[group] !== null){
+		let links=''
+		if(savedTabGroupsUrls[group]){
 			savedTabCount=savedTabGroupsUrls[group].length
+
+			for(let i=0; i<savedTabGroupsTitles[group].length; i++){
+				let faviconSrc = 'assets/blank-favicon.png'
+				if(savedTabGroupsFaviconUrls[group][i]){
+					faviconSrc = savedTabGroupsFaviconUrls[group][i]
+				}
+				links += ('<a href="'+ savedTabGroupsUrls[group][i] +'">'+ '<img src="'+faviconSrc+'" width="16" height="16">'+ savedTabGroupsTitles[group][i] + '</a><br>')
+			}
 		}
 
 		let tabCountInfo='<span class="tabCountInfo">('+savedTabCount+' tabs)</span><br>'
 		if(savedTabCount===1){
 			tabCountInfo='<span class="tabCountInfo">('+savedTabCount+' tab)</span><br>'
 		}
+
 		rowContent.push(
-			'<tr> \
+			'<tr>\
 				<td id="save'+group+'">\
 					Group '+group+
 				'</td>\
 				<td id="load'+group+'">'+
 					tabCountInfo+
 					'Group '+group+
-				'</td>\
+					'<div class="linksContainer">\
+						<div class="links">'+
+							links+
+						'</div>\
+					</div>\
+				</td>\
 			</tr>'
 		)
 	})
@@ -164,6 +174,14 @@ function registerClickHandlers(){
 		}
 		else if(action==='load'){
 			loadGroup(group)
+		}
+	})
+
+	$('#groupButtons').on('click', '.links a', (e)=>{ 
+		if(!e.ctrlKey && !e.shiftKey){		//Ctrl & shift already open tabs
+			chrome.tabs.create({
+				url: e.target.href
+			})
 		}
 	})
 }

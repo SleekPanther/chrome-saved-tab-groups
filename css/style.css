@@ -1,16 +1,36 @@
+body{
+	width: 700px;
+	height: 500px;
+}
+
 #groupButtons{
 	border-collapse: collapse;
 }
 
 #groupButtons th, #groupButtons td{
 	border: 1px solid black;
+	width: 4em;
 }
 
 #groupButtons td:hover{
 	background: grey;
 }
 
-body{
+#groupButtons .linksContainer {
+	position: relative;
+}
+
+#groupButtons .linksContainer > .links {
 	width: 500px;
-	height: 500px;
+	display: none;
+	position: absolute;
+	/*need better height*/
+	margin: -3em 0 0 4em;
+	background: white;
+	/*no border when nothing there...*/
+	border: 1px solid black;
+}
+
+#groupButtons td:hover .links {
+	display: block;
 }
