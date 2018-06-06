@@ -25,10 +25,14 @@ body{
 	display: none;
 	position: absolute;
 	/*need better height*/
-	margin: -3em 0 0 4em;
+	margin: -1.5em 0 0 4em;
 	background: white;
 	/*no border when nothing there...*/
 	border: 1px solid black;
+}
+
+.links a {
+	display: block;
 }
 
 #groupButtons td:hover .links {

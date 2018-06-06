@@ -134,7 +134,7 @@ function populateGroupButtons(){
 				if(savedTabGroupsFaviconUrls[group][i]){
 					faviconSrc = savedTabGroupsFaviconUrls[group][i]
 				}
-				links += ('<a href="'+ savedTabGroupsUrls[group][i] +'">'+ '<img src="'+faviconSrc+'" width="16" height="16">'+ savedTabGroupsTitles[group][i] + '</a><br>')
+				links += ('<a href="'+ savedTabGroupsUrls[group][i] +'">'+ '<img src="'+faviconSrc+'" width="16" height="16">'+ savedTabGroupsTitles[group][i] + '</a>')
 			}
 		}
 
@@ -150,7 +150,6 @@ function populateGroupButtons(){
 				'</td>\
 				<td id="load'+group+'">'+
 					tabCountInfo+
-					'Group '+group+
 					'<div class="linksContainer">\
 						<div class="links">'+
 							links+
