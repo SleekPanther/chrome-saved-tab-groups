@@ -45,7 +45,7 @@ chrome.runtime.onMessage.addListener(
 	}
 )
 
-$().ready( ()=>{
+document.addEventListener("DOMContentLoaded", ()=>{
 	const saveModifierKey=18
 	const loadAdditionalModifierKey=17
 	let isSaveModifierKey = false
@@ -111,6 +111,7 @@ function initPopup(){
 		savedTabGroupsFaviconUrls = response.savedTabGroupsFaviconUrls
 
 		populateGroupButtons()
+		registerClickHandlers()
 	})
 }
 
@@ -160,8 +161,6 @@ function populateGroupButtons(){
 		)
 	})
 	document.getElementById('groupButtons').innerHTML = rowContent.join('')
-
-	$().ready(registerClickHandlers)
 }
 
 function registerClickHandlers(){
