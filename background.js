@@ -117,19 +117,11 @@ function loadTabs(groupNumber){
 		
 		//Start at index 1 & create new tabs for the rest of the saved tabs
 		for(let index=1; index<tabUrlsToLoad.length; index++){
-			if(tabPinnedStatus[index]){
-				chrome.tabs.create({
-					url: tabUrlsToLoad[index],
-					index: index, 
-					pinned: true
-				})
-			}
-			else{
-				chrome.tabs.create({
-					url: tabUrlsToLoad[index],
-					index: index
-				})
-			}
+			chrome.tabs.create({
+				url: tabUrlsToLoad[index],
+				index: index, 
+				pinned: tabPinnedStatus[index]
+			})
 		}
 	})
 }
