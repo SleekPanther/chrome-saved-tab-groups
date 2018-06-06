@@ -52,7 +52,7 @@ function saveCurrentWindowTabs(groupNumber) {
 
 		console.log('Saved Tab URLs\n', savedTabGroupsUrls)
 
-		storageMode = 'sync'
+		storageMode = 'sync'	//attempt to use sync
 		chrome.storage.sync.set({
 				'savedTabGroupsUrls': savedTabGroupsUrls, 
 				'savedTabGroupsTitles': savedTabGroupsTitles, 
@@ -79,47 +79,14 @@ function saveCurrentWindowTabs(groupNumber) {
 function loadTabs(groupNumber){
 	console.log('Load Group', groupNumber)
 
-	if(storageMode==='sync'){
-		chrome.storage.sync.get(['savedTabGroupsUrls', 'savedTabGroupsPinned'], function(syncedTabData) {
-			if(chrome.runtime.lastError){
-				console.log(chrome.runtime.lastError.message)
-			}
-
-			if(syncedTabData.savedTabGroupsUrls === undefined){
-				console.log('Failed to sync savedTabGroupsUrls or empty group, using empty array')
-			}
-			else{
-				savedTabGroupsUrls=syncedTabData.savedTabGroupsUrls
-			}
-
-			if(syncedTabData.savedTabGroupsPinned === undefined){
-				console.log('Failed to sync savedTabGroupsPinned or empty group, using empty array')
-			}
-			else{
-				savedTabGroupsPinned=syncedTabData.savedTabGroupsPinned
-			}
+	 if(storageMode==='sync'){
+		chrome.storage.sync.get(['savedTabGroupsUrls', 'savedTabGroupsPinned'], (tabDataResponse)=>{
+			copyTabDataFromStorageToVariables(tabDataResponse)
 		})
 	}
-	else if(storageMode==='local'){
-		console.log('Loading local')
-		chrome.storage.local.get(['savedTabGroupsUrls', 'savedTabGroupsPinned'], function(localTabData) {
-			if(chrome.runtime.lastError){
-				console.log(chrome.runtime.lastError.message)
-			}
-
-			if(localTabData.savedTabGroupsUrls === undefined){
-				console.log('Failed to get local savedTabGroupsUrls or empty group, using empty array')
-			}
-			else{
-				savedTabGroupsUrls=localTabData.savedTabGroupsUrls
-			}
-
-			if(localTabData.savedTabGroupsPinned === undefined){
-				console.log('Failed to get local savedTabGroupsPinned or empty group, using empty array')
-			}
-			else{
-				savedTabGroupsPinned=localTabData.savedTabGroupsPinned
-			}
+	else{
+		chrome.storage.local.get(['savedTabGroupsUrls', 'savedTabGroupsPinned'], (tabDataResponse)=>{
+			copyTabDataFromStorageToVariables(tabDataResponse)
 		})
 	}
 
@@ -134,7 +101,7 @@ function loadTabs(groupNumber){
 		return
 	}
 
-	//Update the new empty tab to the 1st saved Tab
+	//Update the new empty window/tab to the 1st saved Tab
 	chrome.tabs.query({active: true, currentWindow: true}, function(arrayOfTabs) {
 		let activeTab = arrayOfTabs[0]		// only one tab should be active and in the current window at once
 		
@@ -167,6 +134,27 @@ function loadTabs(groupNumber){
 	})
 }
 
+function copyTabDataFromStorageToVariables(tabDataResponse){
+	if(chrome.runtime.lastError){
+		console.log(chrome.runtime.lastError.message)
+	}
+
+	if(tabDataResponse.savedTabGroupsUrls === undefined){
+		console.log('Failed to sync savedTabGroupsUrls or empty group, using empty array')
+	}
+	else{
+		savedTabGroupsUrls=tabDataResponse.savedTabGroupsUrls
+	}
+
+	if(tabDataResponse.savedTabGroupsPinned === undefined){
+		console.log('Failed to sync savedTabGroupsPinned or empty group, using empty array')
+	}
+	else{
+		savedTabGroupsPinned=tabDataResponse.savedTabGroupsPinned
+	}
+}
+
+
 const defaultGroup = 1
 chrome.commands.onCommand.addListener(function(command) {
 	if(command === 'saveTabs'){
@@ -188,6 +176,7 @@ chrome.commands.onCommand.addListener(function(command) {
 		savedTabGroupsPinned = new Array(GROUP_COUNT)
 	}
 
+	//Testing
 	else if(command === 'sendMessage'){
 		console.log(savedTabGroupsUrls, savedTabGroupsTitles, savedTabGroupsFaviconUrls, savedTabGroupsPinned)
 		chrome.runtime.sendMessage({
