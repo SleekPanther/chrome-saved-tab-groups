@@ -118,10 +118,13 @@ function initPopup(){
 function populateGroupButtons(){
 	const groups = [1, 2, 3, 4, 5, 6, 7, 8, 9, 0]		//group 0 is at the end due to physical keyboard layout
 	let rowContent = [
-		'<tr>\
-			<th>Save</th>\
-			<th>Load</th>\
-		</tr>'
+		`<thead>
+			<tr>
+				<th>Save</th>
+				<th>Load</th>
+			</tr>
+		</thead>
+		<tbody id="groupButtons">`
 	]
 	groups.forEach((group)=>{
 		let savedTabCount=0
@@ -144,19 +147,16 @@ function populateGroupButtons(){
 		}
 
 		rowContent.push(
-			'<tr>\
-				<td id="save'+group+'">\
-					Group '+group+
-				'</td>\
-				<td id="load'+group+'">'+
-					tabCountInfo+
-					'<div class="linksContainer">\
-						<div class="links">'+
-							links+
-						'</div>\
-					</div>\
-				</td>\
-			</tr>'
+			`<tr>
+				<td id='save${group}'>Group ${group}</td>
+				<td id='load${group}'>${tabCountInfo}
+					<div class='linksContainer'>
+						<div class='links'>
+							${links}
+						</div>
+					</div>
+				</td>
+			</tr>`
 		)
 	})
 	document.getElementById('groupButtons').innerHTML = rowContent.join('')
