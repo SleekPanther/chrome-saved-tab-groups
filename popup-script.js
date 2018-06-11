@@ -46,31 +46,31 @@ chrome.runtime.onMessage.addListener(
 )
 
 document.addEventListener("DOMContentLoaded", ()=>{
-	const saveModifierKey=18
-	const loadAdditionalModifierKey=17
-	let isSaveModifierKey = false
-	let isLoadAdditionalModifierKey = false
+	const saveModifierKey=18	//18
+	const loadAdditionalModifierKey=17	//ctrl
+	let isSaveModifierKeyDown = false
+	let isLoadAdditionalModifierKeyDown = false
 	
 	$(document).keyup(function (e) {	//Detect when modifier key is released (no keyboard shortcut should happen)
 		if(e.which == saveModifierKey){
-			isSaveModifierKey=false;
+			isSaveModifierKeyDown=false;
 		}
 		if(e.which == loadAdditionalModifierKey){
-			isLoadAdditionalModifierKey=false
+			isLoadAdditionalModifierKeyDown=false
 		}
 	}).keydown(function (e) {
 		let keycode=e.which
 		if(keycode == saveModifierKey){
-			isSaveModifierKey=true
+			isSaveModifierKeyDown=true
 		}
 		if(keycode == loadAdditionalModifierKey){
-			isLoadAdditionalModifierKey=true
+			isLoadAdditionalModifierKeyDown=true
 		}
 
-		if(isLoadAdditionalModifierKey && isSaveModifierKey && isValidComboKey(keycode)) {
+		if(isLoadAdditionalModifierKeyDown && isSaveModifierKeyDown && isValidComboKey(keycode)) {
 			loadGroup(keycodeToKey[keycode])
 		}
-		else if(isSaveModifierKey && isValidComboKey(keycode)) {
+		else if(isSaveModifierKeyDown && isValidComboKey(keycode)) {
 			saveGroup(keycodeToKey[keycode])
 		}
 	})
