@@ -164,14 +164,6 @@ function populateGroupButtons(){
 }
 
 function registerClickHandlers(){
-	$('#groupButtons').on('click', '.links a', (e)=>{ 
-		if(!e.ctrlKey && !e.shiftKey){		//Ctrl & shift already open tabs
-			chrome.tabs.create({
-				url: e.target.href
-			})
-		}
-	})
-
 	//Click Handlers for saving/loading entire group
 	document.querySelector('#groupButtons').addEventListener('click', (e)=>{
 		if(e.target !== e.currentTarget){	//don't add listener to the container itself
@@ -188,6 +180,16 @@ function registerClickHandlers(){
 			}
 			else if(action==='load'){
 				loadGroup(group)
+			}
+		}
+	})
+
+	document.querySelector('#groupButtons').addEventListener('click', (e)=>{
+		if(e.target.href){		//if it has an href attribute, it must be a link
+			if(!e.ctrlKey && !e.shiftKey){		//Ctrl & shift already open tabs
+				chrome.tabs.create({
+					url: e.target.href
+				})
 			}
 		}
 	})
