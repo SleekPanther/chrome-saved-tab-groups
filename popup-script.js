@@ -93,7 +93,7 @@ function saveGroup(groupNumber){
 	}, ()=>{
 		initPopup()
 	})
-	window.close()		//close popup to fix lastFocusedWindow not changing
+	// window.close()		//close popup to fix lastFocusedWindow not changing
 }
 
 function loadGroup(groupNumber){
@@ -101,7 +101,7 @@ function loadGroup(groupNumber){
 		msg: 'loadGroup', 
 		groupNumber: groupNumber
 	})
-	window.close()
+	// window.close()
 }
 
 function initPopup(){
