@@ -93,7 +93,7 @@ function saveGroup(groupNumber){
 	}, ()=>{
 		initPopup()
 	})
-	// window.close()		//close popup to fix lastFocusedWindow not changing
+	window.close()		//close popup to fix lastFocusedWindow not changing
 }
 
 function loadGroup(groupNumber){
@@ -101,7 +101,7 @@ function loadGroup(groupNumber){
 		msg: 'loadGroup', 
 		groupNumber: groupNumber
 	})
-	// window.close()
+	window.close()
 }
 
 function initPopup(){
@@ -137,13 +137,13 @@ function populateGroupButtons(){
 				if(savedTabGroupsFaviconUrls[group][i]){
 					faviconSrc = savedTabGroupsFaviconUrls[group][i]
 				}
-				links += ('<a href="'+ savedTabGroupsUrls[group][i] +'">'+ '<img src="'+faviconSrc+'" width="16" height="16">'+ savedTabGroupsTitles[group][i] + '</a>')
+				links += `<a href="${savedTabGroupsUrls[group][i]}"><img src="${faviconSrc}" width="16" height="16">${savedTabGroupsTitles[group][i]}</a>`
 			}
 		}
 
-		let tabCountInfo='<span class="tabCountInfo">('+savedTabCount+' tabs)</span><br>'
+		let tabCountInfo=`<span class="tabCountInfo">(${savedTabCount} tabs)</span><br>`
 		if(savedTabCount===1){
-			tabCountInfo='<span class="tabCountInfo">('+savedTabCount+' tab)</span><br>'
+			tabCountInfo=`<span class="tabCountInfo">(${savedTabCount} tab)</span><br>`
 		}
 
 		rowContent.push(
@@ -184,6 +184,7 @@ function registerClickHandlers(){
 		}
 	})
 
+	//Click events to make links in popup open new tabs
 	document.querySelector('#groupButtons').addEventListener('click', (e)=>{
 		if(e.target.href){		//if it has an href attribute, it must be a link
 			if(!e.ctrlKey && !e.shiftKey){		//Ctrl & shift already open tabs
