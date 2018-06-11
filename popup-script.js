@@ -159,27 +159,36 @@ function populateGroupButtons(){
 			</tr>`
 		)
 	})
-	document.getElementById('groupButtons').innerHTML = rowContent.join('')
+	rowContent.push('</tbody>')
+	document.getElementById('groupTable').innerHTML = rowContent.join('')
 }
 
 function registerClickHandlers(){
-	$('#groupButtons').on('click', 'td', (e)=>{ 
-		let group = e.target.id.slice(-1)
-		let action = e.target.id.slice(0, e.target.id.length-1)
-
-		if(action==='save'){
-			saveGroup(group)
-		}
-		else if(action==='load'){
-			loadGroup(group)
-		}
-	})
-
 	$('#groupButtons').on('click', '.links a', (e)=>{ 
 		if(!e.ctrlKey && !e.shiftKey){		//Ctrl & shift already open tabs
 			chrome.tabs.create({
 				url: e.target.href
 			})
+		}
+	})
+
+	//Click Handlers for saving/loading entire group
+	document.querySelector('#groupButtons').addEventListener('click', (e)=>{
+		if(e.target !== e.currentTarget){	//don't add listener to the container itself
+			let element = e.target
+			if(!e.target.id){	//get parent if click detected on child element
+				element = element.parentElement
+			}
+			
+			let group = element.id.slice(-1)
+			let action = element.id.slice(0, element.id.length-1)
+
+			if(action==='save'){
+				saveGroup(group)
+			}
+			else if(action==='load'){
+				loadGroup(group)
+			}
 		}
 	})
 }

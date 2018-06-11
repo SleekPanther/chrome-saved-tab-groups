@@ -3,24 +3,24 @@ body{
 	height: 500px;
 }
 
-#groupButtons{
+#groupTable{
 	border-collapse: collapse;
 }
 
-#groupButtons th, #groupButtons td{
+#groupTable th, #groupTable td{
 	border: 1px solid black;
 	width: 4em;
 }
 
-#groupButtons td:hover{
+#groupTable td:hover{
 	background: grey;
 }
 
-#groupButtons .linksContainer {
+#groupTable .linksContainer {
 	position: relative;
 }
 
-#groupButtons .linksContainer > .links {
+#groupTable .linksContainer > .links {
 	width: 500px;
 	display: none;
 	position: absolute;
