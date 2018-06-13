@@ -30,16 +30,18 @@ const keycodeToKey = {
 }
 
 chrome.runtime.onMessage.addListener(
-	function(request, sender, sendResponse) {
+	(request, sender, sendResponse) => {
 		if (request.msg === 'testMessage') {
 			console.log('Test Message')
 		}
 	}
 )
 
+//Recreate HTML in popoup from javascript if data changes
 chrome.runtime.onMessage.addListener(
-	function(request, sender, sendResponse) {
+	(request, sender, sendResponse) => {
 		if (request.msg === 'tabsDataUpdated') {
+			console.log('yo')
 			initPopup()
 		}
 	}
@@ -106,7 +108,7 @@ function loadGroup(groupNumber){
 }
 
 function initPopup(){
-	chrome.runtime.sendMessage({msg: 'requestSavedTabData'}, (response)=>{
+	chrome.runtime.sendMessage({msg: 'getTabData'}, (response)=>{
 		savedTabGroupsUrls = response.savedTabGroupsUrls
 		savedTabGroupsTitles = response.savedTabGroupsTitles
 		savedTabGroupsFaviconUrls = response.savedTabGroupsFaviconUrls

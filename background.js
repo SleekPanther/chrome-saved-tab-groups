@@ -8,7 +8,7 @@ let savedTabGroupsPinned = new Array(GROUP_COUNT)
 let storageMode = 'sync'	//whether data should be synced or local (sometimes sync gets full & must resort to local)
 
 chrome.runtime.onMessage.addListener(
-	function(request, sender, sendResponse) {
+	(request, sender, sendResponse) => {
 		if (request.msg === 'saveGroup') {
 			saveCurrentWindowTabs(request.groupNumber)
 		}
@@ -16,7 +16,7 @@ chrome.runtime.onMessage.addListener(
 )
 
 chrome.runtime.onMessage.addListener(
-	function(request, sender, sendResponse) {
+	(request, sender, sendResponse) => {
 		if (request.msg === 'loadGroup') {
 			loadTabs(request.groupNumber)
 		}
@@ -24,8 +24,8 @@ chrome.runtime.onMessage.addListener(
 )
 
 chrome.runtime.onMessage.addListener(
-	function(request, sender, sendResponse) {
-		if (request.msg === 'requestSavedTabData') {
+	(request, sender, sendResponse) => {
+		if (request.msg === 'getTabData') {
 			sendResponse({
 				savedTabGroupsUrls: savedTabGroupsUrls, 
 				savedTabGroupsTitles: savedTabGroupsTitles, 
@@ -43,7 +43,7 @@ function saveCurrentWindowTabs(groupNumber) {
 		savedTabGroupsTitles[groupNumber]=[]
 		savedTabGroupsFaviconUrls[groupNumber]=[]
 		savedTabGroupsPinned[groupNumber]=[]
-		tabs.forEach(function(tab, i){
+		tabs.forEach((tab, i)=>{
 			savedTabGroupsUrls[groupNumber].push(tab.url)
 			savedTabGroupsTitles[groupNumber].push(tab.title)
 			savedTabGroupsFaviconUrls[groupNumber].push(tab.favIconUrl)
@@ -147,8 +147,9 @@ function copyTabDataFromStorageToVariables(tabDataResponse){
 }
 
 
+//Listen for keyboard shotcuts
 const defaultGroup = 1
-chrome.commands.onCommand.addListener(function(command) {
+chrome.commands.onCommand.addListener(command => {
 	if(command === 'saveTabs'){
 		saveCurrentWindowTabs(defaultGroup)
 		chrome.runtime.sendMessage({
@@ -169,8 +170,8 @@ chrome.commands.onCommand.addListener(function(command) {
 	}
 
 	//Testing
-	else if(command === 'sendMessage'){
-		console.log(savedTabGroupsUrls, savedTabGroupsTitles, savedTabGroupsFaviconUrls, savedTabGroupsPinned)
+	else if(command === 'test'){
+		console.log('test', savedTabGroupsUrls, savedTabGroupsTitles, savedTabGroupsFaviconUrls, savedTabGroupsPinned)
 		chrome.runtime.sendMessage({
 			msg: 'testMessage'
 		})

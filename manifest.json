@@ -40,7 +40,7 @@
 			},
 			"description": "Clear all saved tabs from synced storage"
 		}, 
-		"sendMessage": {
+		"test": {
 			"suggested_key": {
 				"default": "Alt+W"
 			},
