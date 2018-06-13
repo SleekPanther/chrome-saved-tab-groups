@@ -31,6 +31,10 @@ body{
 	border: 1px solid black;
 }
 
+#groupTable .linksContainer > .links:empty {
+	border: none;
+}
+
 .links a {
 	display: block;
 }

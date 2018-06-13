@@ -41,7 +41,6 @@ chrome.runtime.onMessage.addListener(
 chrome.runtime.onMessage.addListener(
 	(request, sender, sendResponse) => {
 		if (request.msg === 'tabsDataUpdated') {
-			console.log('yo')
 			initPopup()
 		}
 	}
@@ -154,9 +153,7 @@ function populateGroupButtons(){
 				<td id='save${group}'>Group ${group}</td>
 				<td id='load${group}'>${tabCountInfo}
 					<div class='linksContainer'>
-						<div class='links'>
-							${links}
-						</div>
+						<div class='links'>${links}</div>
 					</div>
 				</td>
 			</tr>`
